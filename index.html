@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بچوں کے اردو محاورے - تعلیمی گیم</title>
+  <meta name="description" content="بچوں کے لیے اردو محاورے سیکھنے کا ایک دلچسپ، رنگین اور تعلیمی کھیل جس میں تین مختلف لیول، ٹائمر اور اے آئی استاد شامل ہیں۔">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Background Animated Bubbles -->
+  <div class="bg-decorations">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+  </div>
+
+  <!-- Main Game Arena -->
+  <main id="app-container">
+    
+    <!-- Canvas for Confetti particle effects -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Header bar visible on main screens -->
+    <header class="header-bar">
+      <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text-muted);">اردو محاورے</h2>
+      <button id="open-settings-btn" class="settings-btn" title="ترتیبات (Settings)" aria-label="Settings">⚙️</button>
+    </header>
+
+    <!-- 1. START SCREEN (شروع کی اسکرین) -->
+    <section id="start-screen" class="screen">
+      <div class="brand-logo">
+        <div class="mascot-holder">
+          <!-- Playful Vector Mascot utilizing CSS and Emojis -->
+          <div style="font-size: 5.5rem; filter: drop-shadow(0 10px 15px rgba(139, 92, 246, 0.45)); text-align: center;">🦉</div>
+        </div>
+        <h1 class="main-title">اردو محاورے کی دنیا</h1>
+        <p class="subtitle">بچوں کے لیے ایک دلچسپ اور معلوماتی کھیل 🎓</p>
+      </div>
+
+      <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 18px; border-radius: 20px; text-align: center; margin-bottom: 10px;">
+        <h3 style="font-size: 1.1rem; color: var(--gold); margin-bottom: 6px;">کھیل کے اصول:</h3>
+        <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.7;">
+          ہر مرحلے میں آپ سے <span class="numbers" style="color:white; font-weight:bold;">20</span> سوال پوچھے جائیں گے۔ ہر سوال کا جواب دینے کے لیے آپ کے پاس صرف <span class="numbers" style="color:white; font-weight:bold;">10</span> سیکنڈ ہوں گے۔ صحیح جواب پر آپ کو پوائنٹس ملیں گے اور آپ استاد جی سے اس کا مطلب بھی سیکھ سکتے ہیں!
+        </p>
+      </div>
+
+      <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; text-align: center;">اپنا مرحلہ منتخب کریں:</h2>
+      
+      <div class="stage-selector">
+        <!-- Easy Stage Card -->
+        <div class="stage-card easy-card" data-stage="easy">
+          <div class="stage-info">
+            <h3>آسان مرحلہ</h3>
+            <p>بنیادی اور آسان محاورے</p>
+          </div>
+          <span class="stage-badge">آسان</span>
+        </div>
+
+        <!-- Medium Stage Card -->
+        <div class="stage-card medium-card" data-stage="medium">
+          <div class="stage-info">
+            <h3>میڈیم مرحلہ</h3>
+            <p>تھوڑے سے مشکل محاورے</p>
+          </div>
+          <span class="stage-badge">میڈیم</span>
+        </div>
+
+        <!-- Hard Stage Card -->
+        <div class="stage-card hard-card" data-stage="hard">
+          <div class="stage-info">
+            <h3>ہارڈ مرحلہ</h3>
+            <p>دلچسپ اور مشکل محاورے</p>
+          </div>
+          <span class="stage-badge">ہارڈ</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. GAME ARENA SCREEN (کھیل کا میدان) -->
+    <section id="game-screen" class="screen">
+      <!-- Top Stats Info -->
+      <div class="game-stats">
+        <div class="stat-item">
+          <span class="stat-label">سکور:</span>
+          <span id="score-val" class="stat-value numbers">0</span>
+        </div>
+
+        <!-- Stage Title indicator -->
+        <div style="font-weight: bold; font-size: 1.15rem;">
+          مرحلہ: <span id="current-stage-lbl">آسان</span>
+        </div>
+
+        <!-- Circular countdown timer -->
+        <div class="timer-container">
+          <svg class="timer-svg" viewBox="0 0 56 56">
+            <circle class="timer-circle-bg" cx="28" cy="28" r="25" />
+            <circle id="timer-circle" class="timer-circle-fill" cx="28" cy="28" r="25" />
+          </svg>
+          <span id="timer-sec" class="timer-text">10</span>
+        </div>
+      </div>
+
+      <!-- Question Progress Bar -->
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.9rem; color:var(--text-muted); margin-top:10px;">
+        <span>سوال نمبر: <span id="q-number" class="numbers" style="color:white; font-weight:bold;">1</span> / <span class="numbers">20</span></span>
+      </div>
+      <div class="progress-bar-container">
+        <div id="progress-bar-fill" class="progress-bar-fill"></div>
+      </div>
+
+      <!-- Question Text Box -->
+      <div class="question-card">
+        <p class="question-pre">اس محاورے کا صحیح مطلب کیا ہے؟</p>
+        <h2 id="idiom-text" class="question-text">نو دو گیارہ ہونا</h2>
+      </div>
+
+      <!-- Options Container -->
+      <div id="options-box" class="options-container">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+
+      <!-- Slide Up Correct/Incorrect Feedback -->
+      <div id="feedback-container" class="feedback-panel">
+        <div class="feedback-header">
+          <span id="feedback-status" class="feedback-status">شاباش! بالکل درست۔ 🎉</span>
+        </div>
+        <p id="feedback-meaning" class="feedback-meaning">اس کا مطلب ہے: بھاگ جانا۔</p>
+        <div class="feedback-actions">
+          <button id="btn-ask-teacher" class="btn btn-teacher" title="Ask Teacher">
+            <span>استاد سے پوچھیں 👨‍🏫</span>
+          </button>
+          <button id="btn-next-question" class="btn btn-primary btn-next">
+            <span>اگلا سوال ➡️</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. AI TEACHER EXPLANATION DRAWERS (استاد جی کی کلاس) -->
+    <section id="teacher-modal" class="teacher-modal">
+      <div class="teacher-modal-header">
+        <div class="teacher-profile">
+          <div class="teacher-avatar-sm" style="font-size: 2.2rem; text-align: center; display: flex; align-items: center; justify-content: center;">👨‍🏫</div>
+          <div class="teacher-info">
+            <h4>اردو استاد (اے آئی)</h4>
+            <p>سبق آموز اور دلچسپ کہانیاں</p>
+          </div>
+        </div>
+        <button id="close-teacher-btn" class="close-btn" aria-label="Close">❌</button>
+      </div>
+
+      <!-- Chat Bubble Box -->
+      <div id="chat-box" class="chat-container">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+
+      <button id="close-teacher-bottom" class="btn btn-primary" onclick="closeTeacherExplanation()" style="width: 100%;">
+        <span>ٹھیک ہے، سمجھ گیا! 👍</span>
+      </button>
+    </section>
+
+    <!-- 4. RESULTS SCREEN (نتائج کا ڈیش بورڈ) -->
+    <section id="result-screen" class="screen">
+      <div class="results-card">
+        <div id="trophy" class="trophy-container">🏆</div>
+        <h2 id="results-badge" class="results-badge">محاوروں کے بادشاہ! 👑</h2>
+        <div class="score-ratio"><span id="final-score-val">18</span>/<span id="total-q-val" class="numbers">20</span></div>
+        <p id="results-msg" class="score-text">شاباش! آپ نے بہت شاندار کھیل پیش کیا۔</p>
+      </div>
+
+      <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 8px;">آپ کے جوابات کا جائزہ:</h3>
+      <div id="review-list" class="review-list">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+
+      <button id="btn-restart" class="btn btn-primary" style="width: 100%; font-size: 1.3rem;">
+        <span>دوبارہ کھیلیں 🔄</span>
+      </button>
+    </section>
+
+    <!-- 5. SETTINGS OVERLAY PANEL (ترتیبات) -->
+    <section id="settings-panel" class="settings-overlay">
+      <div class="teacher-modal-header">
+        <h3 style="font-size: 1.3rem; font-weight: 700;">⚙️ گیم کی ترتیبات (Settings)</h3>
+        <button id="close-settings-btn" class="close-btn" aria-label="Close Settings">❌</button>
+      </div>
+
+      <div class="settings-group">
+        <label for="api-key-input">Groq API Key:</label>
+        <input type="password" id="api-key-input" class="settings-input" placeholder="gsk_...">
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 5px;">
+          یہ گیم محاوروں کی کہانیاں تیار کرنے کے لیے Groq API کا استعمال کرتا ہے۔ اگر آپ اپنی خود کی کی (Key) استعمال کرنا چاہیں تو یہاں درج کریں۔
+        </p>
+      </div>
+
+      <div style="margin-top: auto; display: flex; gap: 12px;">
+        <button id="save-settings-btn" class="btn btn-primary" style="flex-grow: 1;">
+          <span>محفوظ کریں (Save) ✔️</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Script Declarations -->
+  <script src="idioms.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
